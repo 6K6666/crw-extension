@@ -211,6 +211,18 @@ Automated DMG packaging:
 TEAM_ID="APPLE_TEAM_ID" npm run package:macos-dmg
 ```
 
+To package the AltStore IPA and macOS DMG together, use the release wrapper:
+
+```shell
+TEAM_ID="APPLE_TEAM_ID" NOTARY_PROFILE="crw-notary" npm run package:release
+```
+
+To run the validation suite first:
+
+```shell
+TEAM_ID="APPLE_TEAM_ID" NOTARY_PROFILE="crw-notary" npm run package:release -- all --check
+```
+
 The output is:
 
 ```text

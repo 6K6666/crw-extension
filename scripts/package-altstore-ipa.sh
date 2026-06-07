@@ -10,6 +10,7 @@ APP_NAME="Consumer Rights Wiki.app"
 APP_PATH="$PRODUCTS_DIR/$APP_NAME"
 OUT_DIR="$ROOT_DIR/build/altstore"
 PAYLOAD_DIR="$OUT_DIR/Payload"
+EXTENSION_PLIST="$APP_NAME/PlugIns/Consumer Rights Wiki Extension.appex/Info.plist"
 
 echo "Building unsigned iOS app for AltStore..."
 xcodebuild \
@@ -35,6 +36,11 @@ rm -rf "$PAYLOAD_DIR" "$IPA_PATH"
 mkdir -p "$PAYLOAD_DIR"
 ditto "$APP_PATH" "$PAYLOAD_DIR/$APP_NAME"
 
+if [[ ! -f "$PAYLOAD_DIR/$EXTENSION_PLIST" ]]; then
+  echo "Staged IPA payload is missing the Safari web extension appex." >&2
+  exit 1
+fi
+
 (
   cd "$OUT_DIR"
   /usr/bin/zip -qry "$(basename "$IPA_PATH")" Payload
@@ -42,7 +48,7 @@ ditto "$APP_PATH" "$PAYLOAD_DIR/$APP_NAME"
 
 rm -rf "$PAYLOAD_DIR"
 
-if ! /usr/bin/unzip -l "$IPA_PATH" | grep -q "Payload/Consumer Rights Wiki.app/PlugIns/Consumer Rights Wiki Extension.appex/Info.plist"; then
+if ! /usr/bin/unzip -Z1 "$IPA_PATH" | grep -Fxq "Payload/$EXTENSION_PLIST"; then
   echo "Packaged IPA is missing the Safari web extension appex." >&2
   exit 1
 fi

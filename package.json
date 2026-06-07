@@ -16,6 +16,7 @@
     "sync-safari-resources": "npm run build-safari && node --experimental-strip-types scripts/sync-safari-resources.ts",
     "package:altstore": "npm run sync-safari-resources && scripts/package-altstore-ipa.sh",
     "package:macos-dmg": "npm run sync-safari-resources && scripts/package-macos-dmg.sh",
+    "package:release": "scripts/package-release.sh",
     "check": "npm run lint && npm run typecheck && npm test && npm run build",
     "build:watch": "chokidar \"src/**/*\" -i \"src/generated/**\" -c \"npm run build\"",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"tests/**/*.ts\" \"scripts/**/*.ts\"",

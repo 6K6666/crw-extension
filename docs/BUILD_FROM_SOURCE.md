@@ -75,6 +75,12 @@ For iPhone and iPad, open Settings > Safari > Extensions and enable Consumer Rig
 ## Validate Before Packaging
 
 ```shell
+npm run check
+```
+
+Or run the same checks individually:
+
+```shell
 npm test
 npm run lint
 npm run build-safari
@@ -82,6 +88,34 @@ npm run sync-safari-resources
 ```
 
 For additional Xcode validation commands, see [SAFARI.md](SAFARI.md).
+
+## Package Both Release Artifacts
+
+To create both public download artifacts in one run:
+
+```shell
+TEAM_ID="APPLE_TEAM_ID" NOTARY_PROFILE="crw-notary" npm run package:release
+```
+
+That command syncs the Safari extension resources once, then creates:
+
+```text
+build/altstore/Consumer Rights Wiki-1.0-2.ipa
+build/macos-dmg/Consumer Rights Wiki-1.0-2.dmg
+```
+
+Run only one target when needed:
+
+```shell
+npm run package:release -- ios
+TEAM_ID="APPLE_TEAM_ID" NOTARY_PROFILE="crw-notary" npm run package:release -- macos
+```
+
+Run the full validation suite first:
+
+```shell
+TEAM_ID="APPLE_TEAM_ID" NOTARY_PROFILE="crw-notary" npm run package:release -- all --check
+```
 
 ## Package For AltStore
 

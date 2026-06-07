@@ -22,10 +22,14 @@ developer_id_identity() {
 }
 
 SIGN_IDENTITY="${MACOS_SIGNING_IDENTITY:-$(developer_id_identity)}"
-XCODE_TEAM_ARGS=()
-if [[ -n "$TEAM_ID" ]]; then
-  XCODE_TEAM_ARGS+=(DEVELOPMENT_TEAM="$TEAM_ID")
-fi
+
+run_xcodebuild() {
+  if [[ -n "$TEAM_ID" ]]; then
+    xcodebuild "$@" DEVELOPMENT_TEAM="$TEAM_ID" build
+  else
+    xcodebuild "$@" build
+  fi
+}
 
 echo "Building macOS app..."
 if [[ -n "$SIGN_IDENTITY" ]]; then
@@ -33,7 +37,7 @@ if [[ -n "$SIGN_IDENTITY" ]]; then
   if [[ -z "$TEAM_ID" ]]; then
     echo "TEAM_ID is not set; xcodebuild will use any signing team configured outside this script." >&2
   fi
-  xcodebuild \
+  run_xcodebuild \
     -quiet \
     -project "$PROJECT_PATH" \
     -scheme "$SCHEME" \
@@ -41,21 +45,17 @@ if [[ -n "$SIGN_IDENTITY" ]]; then
     -destination "generic/platform=macOS" \
     -derivedDataPath "$DERIVED_DATA_PATH" \
     CODE_SIGN_STYLE=Manual \
-    CODE_SIGN_IDENTITY="$SIGN_IDENTITY" \
-    "${XCODE_TEAM_ARGS[@]}" \
-    build
+    CODE_SIGN_IDENTITY="$SIGN_IDENTITY"
 else
   echo "No Developer ID Application identity found; building with automatic local signing."
-  xcodebuild \
+  run_xcodebuild \
     -quiet \
     -project "$PROJECT_PATH" \
     -scheme "$SCHEME" \
     -configuration Release \
     -destination "generic/platform=macOS" \
     -derivedDataPath "$DERIVED_DATA_PATH" \
-    "${XCODE_TEAM_ARGS[@]}" \
-    -allowProvisioningUpdates \
-    build
+    -allowProvisioningUpdates
 fi
 
 if [[ ! -d "$APP_PATH" ]]; then
