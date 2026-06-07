@@ -48,7 +48,9 @@ fi
 
 rm -rf "$PAYLOAD_DIR"
 
-if ! /usr/bin/unzip -Z1 "$IPA_PATH" | grep -Fxq "Payload/$EXTENSION_PLIST"; then
+IPA_FILE_LIST="$(/usr/bin/unzip -Z1 "$IPA_PATH")"
+
+if ! grep -Fxq "Payload/$EXTENSION_PLIST" <<<"$IPA_FILE_LIST"; then
   echo "Packaged IPA is missing the Safari web extension appex." >&2
   exit 1
 fi
